@@ -2,7 +2,11 @@ name: Angular/TS Web App Build & Drop
 
 on:
   push:
+    branches: [ main, develop, "devops-*" ]
+  pull_request:
     branches: [ main, develop ]
+  workflow_dispatch:
+
 
 jobs:
   security:
