@@ -96,6 +96,7 @@ export class CartEventService {
         bubbles: true,
         composed: true,
       });
+      (customEvent as any)._fromAngularHost = true;
       window.dispatchEvent(customEvent);
     }
   }
@@ -105,8 +106,24 @@ export class CartEventService {
 
     window.addEventListener(MFE_CART_EVENT_NAME, (event: Event) => {
       const customEvent = event as CustomEvent<CartEventPayload>;
-      if (customEvent.detail) {
-        this.eventSubject.next(customEvent.detail);
+      const payload = customEvent.detail;
+      if (!payload || (customEvent as any)._fromAngularHost) return;
+
+      this.eventSubject.next(payload);
+
+      switch (payload.type) {
+        case 'REMOVE_ITEM':
+          if (payload.productId) {
+            this.cartItemsState.set(
+              this.cartItemsState().filter((item) => item.product.id !== payload.productId)
+            );
+          }
+          break;
+        case 'CLEAR_CART':
+          this.cartItemsState.set([]);
+          break;
+        default:
+          break;
       }
     });
   }

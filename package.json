@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "dev": "npx concurrently \"npm --workspace=@mfe/host run dev\" \"npm --workspace=@mfe/remote run dev\"",
+    "dev": "npx -y concurrently \"npm --workspace=@mfe/host run dev\" \"npm --workspace=@mfe/remote run dev\"",
     "dev:host": "npm --workspace=@mfe/host run dev",
     "dev:remote": "npm --workspace=@mfe/remote run dev",
     "lint": "turbo run lint",

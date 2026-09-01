@@ -58,15 +58,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ initialOpen = false, onC
             }
             return [...prevItems, { product: targetProduct, quantity: 1, addedAt: new Date().toISOString() }];
           });
-
-          messageApi.success(`"${targetProduct.name}" foi adicionado ao carrinho!`);
           break;
         }
 
         case 'REMOVE_ITEM': {
           if (!payload.productId) break;
           setItems((prevItems) => prevItems.filter((i) => i.product.id !== payload.productId));
-          messageApi.info('Item removido do carrinho.');
           break;
         }
 
@@ -84,7 +81,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ initialOpen = false, onC
           break;
       }
     },
-    [messageApi]
+    []
   );
 
   useEffect(() => {
@@ -93,6 +90,18 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ initialOpen = false, onC
       window.removeEventListener(MFE_CART_EVENT_NAME, handleCartEvent);
     };
   }, [handleCartEvent]);
+
+  const dispatchSyncEvent = (payload: CartEventPayload): void => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent<CartEventPayload>(MFE_CART_EVENT_NAME, {
+          detail: payload,
+          bubbles: true,
+          composed: true,
+        })
+      );
+    }
+  };
 
   const updateQuantity = (productId: string, delta: number): void => {
     setItems((prevItems) =>
@@ -110,12 +119,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ initialOpen = false, onC
 
   const removeItem = (productId: string): void => {
     setItems((prevItems) => prevItems.filter((item) => item.product.id !== productId));
-    messageApi.info('Item removido.');
+    dispatchSyncEvent({ type: 'REMOVE_ITEM', productId });
   };
 
   const clearCart = (): void => {
     setItems([]);
-    messageApi.info('Carrinho esvaziado.');
+    dispatchSyncEvent({ type: 'CLEAR_CART' });
   };
 
   const handleCheckout = (): void => {
