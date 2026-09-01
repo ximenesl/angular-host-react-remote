@@ -540,7 +540,6 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
 
   public addToCart(product: ProductItem): void {
     this.cartService.addItem(product);
-    this.cartService.toggleDrawer(true);
     this.nzMessage.success(`"${product.name}" adicionado ao carrinho!`);
   }
 
