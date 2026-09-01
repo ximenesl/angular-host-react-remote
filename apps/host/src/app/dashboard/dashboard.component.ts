@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
@@ -46,6 +46,9 @@ import { CartEventService } from '../core/services/cart-event.service';
   ],
   template: `
     <nz-layout class="dashboard-layout">
+      <!-- Elemento Container para montar o Micro-frontend React Remote -->
+      <div #cartContainer class="cart-remote-container"></div>
+
       <!-- Navbar / Header -->
       <nz-header class="dashboard-header">
         <div class="header-container">
@@ -459,7 +462,10 @@ import { CartEventService } from '../core/services/cart-event.service';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardComponent {
+export class DashboardComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('cartContainer') public cartContainer!: ElementRef<HTMLDivElement>;
+  private unmountCartRemote?: () => void;
+
   private readonly fb = inject(FormBuilder);
   private readonly nzMessage = inject(NzMessageService);
   public readonly authService = inject(AuthService);
@@ -502,6 +508,25 @@ export class DashboardComponent {
     });
   }
 
+  public async ngAfterViewInit(): Promise<void> {
+    try {
+      const mfe = await import('cartRemote/CartApp');
+      if (mfe && mfe.mountCartApp && this.cartContainer?.nativeElement) {
+        this.unmountCartRemote = mfe.mountCartApp({
+          container: this.cartContainer.nativeElement,
+        });
+      }
+    } catch (error) {
+      console.warn('Micro-frontend do Carrinho React não pôde ser carregado:', error);
+    }
+  }
+
+  public ngOnDestroy(): void {
+    if (this.unmountCartRemote) {
+      this.unmountCartRemote();
+    }
+  }
+
   public resetFilters(): void {
     this.filterForm.reset();
     this.productService.resetFilters();
@@ -509,6 +534,7 @@ export class DashboardComponent {
 
   public addToCart(product: ProductItem): void {
     this.cartService.addItem(product);
+    this.cartService.toggleDrawer(true);
     this.nzMessage.success(`"${product.name}" adicionado ao carrinho!`);
   }
 
