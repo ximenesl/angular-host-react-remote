@@ -25,7 +25,8 @@
       "@dashboard/*": ["src/app/dashboard/*"],
       "@cart/*": ["src/app/cart/*"]
     },
-    "lib": ["ES2022", "dom"]
+    "lib": ["ES2022", "dom"],
+    "types": ["node"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
