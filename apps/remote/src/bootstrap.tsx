@@ -16,7 +16,7 @@ export const mountCartApp = ({ container }: MountOptions): (() => void) => {
     rootsMap.set(container, root);
   }
 
-  root.render(<App isDrawerVisible={true} />);
+  root.render(<App isDrawerVisible={false} />);
 
   return () => {
     setTimeout(() => {
@@ -26,7 +26,7 @@ export const mountCartApp = ({ container }: MountOptions): (() => void) => {
   };
 };
 
-// Standalone execution mode for independent development & testing
+// Modos de inicialização standalone para testes e desenvolvimento isolado
 const standaloneContainer = document.getElementById('root');
 if (standaloneContainer && process.env.NODE_ENV === 'development') {
   const root = createRoot(standaloneContainer);

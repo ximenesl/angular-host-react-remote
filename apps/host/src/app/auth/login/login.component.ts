@@ -32,7 +32,6 @@ import { AuthService } from '../services/auth.service';
             <span nz-icon nzType="shield" nzTheme="outline"></span>
           </div>
           <h2 class="title">Enterprise Portal</h2>
-          <p class="subtitle">Acesse o Host Application com suas credenciais corporativas</p>
         </div>
 
         @if (errorMessage()) {
@@ -103,10 +102,6 @@ import { AuthService } from '../services/auth.service';
             Entrar na Plataforma
           </button>
         </form>
-
-        <div class="login-footer">
-          <small>Desenvolvido com Angular 17+ Standalone & Signals</small>
-        </div>
       </nz-card>
     </div>
   `,
