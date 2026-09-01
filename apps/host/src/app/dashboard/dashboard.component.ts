@@ -18,6 +18,7 @@ import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { ProductItem, ProductStatus } from '@mfe/shared-types';
+import { loadRemoteModule } from '@angular-architects/module-federation';
 import { AuthService } from '../auth/services/auth.service';
 import { ProductService } from './services/product.service';
 import { CartEventService } from '../core/services/cart-event.service';
@@ -510,7 +511,12 @@ export class DashboardComponent implements AfterViewInit, OnDestroy {
 
   public async ngAfterViewInit(): Promise<void> {
     try {
-      const mfe = await import('cartRemote/CartApp');
+      const mfe = await loadRemoteModule({
+        type: 'script',
+        remoteEntry: 'http://localhost:4201/remoteEntry.js',
+        remoteName: 'cartRemote',
+        exposedModule: './CartApp',
+      });
       if (mfe && mfe.mountCartApp && this.cartContainer?.nativeElement) {
         this.unmountCartRemote = mfe.mountCartApp({
           container: this.cartContainer.nativeElement,
